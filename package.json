@@ -1,0 +1,20 @@
+{
+  "name": "@seanshipman777/openclaw-control-plane",
+  "version": "0.1.0",
+  "description": "Task-ledger-first control-plane extensions for safe OpenClaw upgrades",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "main": "./index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "openclaw": "^2026.3.24"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  }
+}
