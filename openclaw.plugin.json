@@ -1,5 +1,5 @@
 {
-  "id": "control-plane",
+  "id": "openclaw-control-plane",
   "name": "Control Plane",
   "description": "Task-ledger-first control-plane helpers for safer agent execution",
   "configSchema": {
