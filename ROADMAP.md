@@ -95,10 +95,12 @@ Goal: turn triage into bounded execution contracts.
 
 Goal: generate compact, reusable handoff packets.
 
-- [ ] session-resume pack
-- [ ] subagent brief pack
-- [ ] human-readable status pack
-- [ ] lane-specific context shaping
+- [x] session-resume pack
+- [x] subagent brief pack
+- [x] human-readable status pack
+- [x] lane-specific context shaping
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
 
 ## Phase 9 — drift monitor
 

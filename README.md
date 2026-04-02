@@ -141,6 +141,30 @@ Grounding from claw-code source:
 
 This is the layer that answers: **what is the clean bounded plan to execute next?**
 
+## Phase 8: handoff composer
+
+The eighth feature turns structured state into compact packets for execution and recovery.
+
+It provides:
+
+- resume packs for continuing after reset/compaction
+- worker brief packs for bounded delegation
+- review packs for reviewer/validator lanes
+- status packs for concise human updates
+
+Grounding from claw-code source:
+
+- `agentMemory`
+- `agentMemorySnapshot`
+- `resumeAgent`
+- `runAgent`
+- `forkSubagent`
+- `spawnMultiAgent`
+- `TaskOutputTool`
+- `assistant/sessionHistory.ts`
+
+This is the layer that answers: **what exact packet should I hand off to continue or delegate this work cleanly?**
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -164,6 +188,8 @@ This is the layer that answers: **what is the clean bounded plan to execute next
 - `src/review-queue-tool.js` — review queue query surface for summary/list/get
 - `src/plan-mode.js` — plan contracts, session-scoped plan mode, and prompt guidance hooks
 - `src/plan-mode-tool.js` — build/enter/status/exit plan mode surface
+- `src/handoff-pack.js` — compact resume/worker/review/status packet composer
+- `src/handoff-pack-tool.js` — handoff pack build surface
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
@@ -171,6 +197,7 @@ This is the layer that answers: **what is the clean bounded plan to execute next
 - `test/control-plane-automation.test.js` — lifecycle automation tests
 - `test/review-queue.test.js` — review queue scoring and filtering tests
 - `test/plan-mode.test.js` — plan contract and session plan-mode tests
+- `test/handoff-pack.test.js` — resume/worker/review pack composition tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -235,6 +262,13 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - stores active plan mode per session
 - injects plan guidance into future prompt builds while active
 - defaults to planning-only mode unless explicitly relaxed
+
+## Handoff pack behavior
+
+- composes resume, worker, review, and status packs from task + plan + review state
+- keeps packets compact and mode-specific instead of dumping raw task files
+- resolves the current session task automatically when possible
+- is designed for reuse by future delegation/resume flows
 
 ## Upstream strategy
 

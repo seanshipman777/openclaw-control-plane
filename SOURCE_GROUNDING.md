@@ -53,5 +53,19 @@ It is not a literal one-to-one port.
 - `src/reference_data/tools_snapshot.json` includes:
   - `EnterPlanModeTool`
   - `ExitPlanModeV2Tool`
-  - `planAgent`
+- `planAgent`
 - This grounds `plan_mode` as a planning and bounded-delegation layer rather than an invented workflow abstraction.
+
+## Verified public anchors used for phase 8
+
+### Agent memory + resume + task output surfaces
+- `src/reference_data/tools_snapshot.json` includes:
+  - `agentMemory`
+  - `agentMemorySnapshot`
+  - `resumeAgent`
+  - `runAgent`
+  - `forkSubagent`
+  - `spawnMultiAgent`
+  - `TaskOutputTool`
+- `src/reference_data/subsystems/assistant.json` references `assistant/sessionHistory.ts`.
+- This grounds `handoff_pack` as a compact execution/recovery packet layer rather than a made-up summary feature.
