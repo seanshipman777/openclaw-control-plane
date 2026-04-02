@@ -121,6 +121,26 @@ Grounding from claw-code source:
 
 This is the layer that answers: **what needs attention right now?**
 
+## Phase 7: plan mode + delegation planner
+
+The seventh feature turns triage into a bounded execution contract.
+
+It provides:
+
+- plan contracts with objective, constraints, acceptance criteria, proof tier, route, and stop conditions
+- default step scaffolds for bounded execution
+- session-scoped plan mode activation
+- prompt guidance while plan mode is active until explicitly exited
+
+Grounding from claw-code source:
+
+- `commands/plan/*`
+- `EnterPlanModeTool`
+- `ExitPlanModeV2Tool`
+- `planAgent`
+
+This is the layer that answers: **what is the clean bounded plan to execute next?**
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -142,12 +162,15 @@ This is the layer that answers: **what needs attention right now?**
 - `src/control-plane-automation.js` — lifecycle automation hooks and review reminder helpers
 - `src/review-queue.js` — source-grounded attention/risk/staleness scoring over task state
 - `src/review-queue-tool.js` — review queue query surface for summary/list/get
+- `src/plan-mode.js` — plan contracts, session-scoped plan mode, and prompt guidance hooks
+- `src/plan-mode-tool.js` — build/enter/status/exit plan mode surface
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
 - `test/validation-bundle.test.js` — validation bundle tests
 - `test/control-plane-automation.test.js` — lifecycle automation tests
 - `test/review-queue.test.js` — review queue scoring and filtering tests
+- `test/plan-mode.test.js` — plan contract and session plan-mode tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -205,6 +228,13 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - exposes summary/list/get query modes
 - stays deterministic and rule-based rather than heuristic mush
 - defaults to session-scoped triage so one lane does not spam another
+
+## Plan mode behavior
+
+- builds structured bounded execution contracts from task or direct inputs
+- stores active plan mode per session
+- injects plan guidance into future prompt builds while active
+- defaults to planning-only mode unless explicitly relaxed
 
 ## Upstream strategy
 

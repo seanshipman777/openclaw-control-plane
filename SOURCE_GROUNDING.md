@@ -43,5 +43,15 @@ It is not a literal one-to-one port.
   - `TaskListTool`
   - `TaskOutputTool`
   - `TaskStopTool`
-  - `TaskUpdateTool`
+- `TaskUpdateTool`
 - This grounds `review_queue` as a task/review attention layer rather than a made-up dashboard.
+
+## Verified public anchors used for phase 7
+
+### Plan mode + planning surfaces
+- `src/reference_data/commands_snapshot.json` includes `plan` and `ultraplan` commands.
+- `src/reference_data/tools_snapshot.json` includes:
+  - `EnterPlanModeTool`
+  - `ExitPlanModeV2Tool`
+  - `planAgent`
+- This grounds `plan_mode` as a planning and bounded-delegation layer rather than an invented workflow abstraction.

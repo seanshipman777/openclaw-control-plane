@@ -96,6 +96,30 @@
             "description": "Default maximum number of review queue items to return."
           }
         }
+      },
+      "planMode": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable plan-mode tooling and prompt guidance hooks."
+          },
+          "maxSteps": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "description": "Maximum number of normalized plan steps to keep in a contract."
+          },
+          "planningOnlyDefault": {
+            "type": "boolean",
+            "description": "Default new plans to planning-only mode until explicitly exited or relaxed."
+          },
+          "injectPromptContext": {
+            "type": "boolean",
+            "description": "Inject active plan guidance into before_prompt_build for the current session."
+          }
+        }
       }
     }
   }

@@ -79,7 +79,19 @@ Goal: make follow-up visible.
 - [ ] live OpenClaw install test
 - [ ] real-session usability pass
 
-## Phase 7 — handoff composer
+## Phase 7 — plan mode + delegation planner
+
+Goal: turn triage into bounded execution contracts.
+
+- [x] task → plan contract generator
+- [x] acceptance criteria wiring
+- [x] proof-tier expectation wiring
+- [x] expected output schema wiring
+- [x] session-scoped plan mode enter/exit
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
+
+## Phase 8 — handoff composer
 
 Goal: generate compact, reusable handoff packets.
 
@@ -87,15 +99,6 @@ Goal: generate compact, reusable handoff packets.
 - [ ] subagent brief pack
 - [ ] human-readable status pack
 - [ ] lane-specific context shaping
-
-## Phase 8 — delegation planner
-
-Goal: turn tasks into bounded worker contracts.
-
-- [ ] task → worker brief generator
-- [ ] acceptance criteria wiring
-- [ ] proof-tier expectation wiring
-- [ ] expected output schema wiring
 
 ## Phase 9 — drift monitor
 
