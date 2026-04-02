@@ -4,6 +4,15 @@
 
 Ship the smallest high-leverage slice first. Keep OpenClaw core untouched until the extension earns its way in.
 
+## Build doctrine
+
+The repo-level operating setup for continued development lives in:
+
+- `BUILD_SYSTEM.md`
+- `PUBLIC_REPO_SAFETY.md`
+
+These documents are part of the build system, not optional notes.
+
 ## Phase 1 — task ledger
 
 Goal: structured short-horizon state.

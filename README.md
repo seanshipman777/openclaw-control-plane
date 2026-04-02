@@ -172,6 +172,20 @@ This is the layer that answers: **what exact packet should I hand off to continu
 - **Easy to integrate**: plugin install, enable, test, keep or remove.
 - **Easy to upstream**: the feature boundary is clear.
 
+## Build system
+
+This repo also ships with a build-system doctrine:
+
+- `BUILD_SYSTEM.md` — recommended team/lane setup for continuing development
+- `PUBLIC_REPO_SAFETY.md` — public-distribution safety rules and hygiene checks
+
+These exist so future feature work stays:
+
+- source-grounded
+- public-safe
+- bounded and testable
+- consistent across phases
+
 ## Current repo contents
 
 - `index.js` — plugin entrypoint
