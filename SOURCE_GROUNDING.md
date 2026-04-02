@@ -32,3 +32,16 @@ It is not a literal one-to-one port.
 - Directly port when the public implementation is clear.
 - Adapt carefully when the public source exposes the concept/config surface but not the full runtime path.
 - Avoid claiming parity where the claw-code source only shows an intent or stub.
+
+## Verified public anchors used for phase 6
+
+### Review + tasks surfaces
+- `src/reference_data/commands_snapshot.json` includes `review` and `tasks` commands.
+- `src/reference_data/tools_snapshot.json` includes:
+  - `TaskCreateTool`
+  - `TaskGetTool`
+  - `TaskListTool`
+  - `TaskOutputTool`
+  - `TaskStopTool`
+  - `TaskUpdateTool`
+- This grounds `review_queue` as a task/review attention layer rather than a made-up dashboard.

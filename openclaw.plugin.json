@@ -69,6 +69,33 @@
             }
           }
         }
+      },
+      "reviewQueue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "activeStaleAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Default stale threshold for active tasks in the review queue."
+          },
+          "blockedStaleAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Default stale threshold for blocked tasks in the review queue."
+          },
+          "doneStaleAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Default stale threshold for done tasks when included in the review queue."
+          },
+          "defaultListLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Default maximum number of review queue items to return."
+          }
+        }
       }
     }
   }

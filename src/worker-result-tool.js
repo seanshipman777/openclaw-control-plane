@@ -158,7 +158,12 @@ export function createWorkerResultTool(_api, ctx) {
             ctx.workspaceDir,
             result.task.taskId,
             buildWorkerReviewSummary(result),
-            "worker_result"
+            "worker_result",
+            {
+              status: result.status,
+              needsReview: result.handoff?.needsReview === true,
+              riskCount: Array.isArray(result.risks) ? result.risks.length : 0
+            }
           )
         : undefined;
 

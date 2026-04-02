@@ -128,7 +128,12 @@ export function createValidationBundleTool(_api, ctx) {
             ctx.workspaceDir,
             bundle.target.taskId,
             buildValidationReviewSummary(bundle),
-            "validation_bundle"
+            "validation_bundle",
+            {
+              validationOutcome: bundle.outcome,
+              riskCount: Array.isArray(bundle.unresolvedRisks) ? bundle.unresolvedRisks.length : 0,
+              tier: bundle.tier
+            }
           )
         : undefined;
 

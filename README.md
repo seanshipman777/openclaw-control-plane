@@ -102,6 +102,25 @@ Grounding from claw-code source:
 
 This is intentionally conservative: capture handoff state at the moments where context is most likely to get lost.
 
+## Phase 6: review queue
+
+The sixth feature makes review and follow-up queryable instead of implicit.
+
+It provides:
+
+- attention ranking across tasks
+- blocked/stale views
+- review-reminder visibility
+- unresolved-risk surfacing
+- task-level inspection for operator triage
+
+Grounding from claw-code source:
+
+- `commands/tasks/*` and `TaskListTool` / `TaskGetTool` / `TaskOutputTool` / `TaskStopTool`
+- `commands/review*`
+
+This is the layer that answers: **what needs attention right now?**
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -121,11 +140,14 @@ This is intentionally conservative: capture handoff state at the moments where c
 - `src/validation-bundle.js` — proof-tier validation bundle normalizer/validator
 - `src/validation-bundle-tool.js` — OpenClaw tool surface for reviewer-readable validation artifacts
 - `src/control-plane-automation.js` — lifecycle automation hooks and review reminder helpers
+- `src/review-queue.js` — source-grounded attention/risk/staleness scoring over task state
+- `src/review-queue-tool.js` — review queue query surface for summary/list/get
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
 - `test/validation-bundle.test.js` — validation bundle tests
 - `test/control-plane-automation.test.js` — lifecycle automation tests
+- `test/review-queue.test.js` — review queue scoring and filtering tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -176,6 +198,13 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - checkpoints tasks after failed runs or long runs
 - dedupes repeated automatic checkpoints in a short window
 - can attach review reminders to task history when structured outputs indicate follow-up
+
+## Review queue behavior
+
+- ranks attention using blocked/review/risk/staleness signals
+- exposes summary/list/get query modes
+- stays deterministic and rule-based rather than heuristic mush
+- defaults to session-scoped triage so one lane does not spam another
 
 ## Upstream strategy
 

@@ -204,7 +204,7 @@ export async function appendAutomationCheckpointForContext(
   return changed;
 }
 
-export async function appendTaskReviewReminder(pluginConfig, workspaceDir, taskId, summary, kind) {
+export async function appendTaskReviewReminder(pluginConfig, workspaceDir, taskId, summary, kind, meta = {}) {
   const config = resolveAutomationConfig(pluginConfig);
   if (!config.enabled || !config.reviewReminders.enabled || !cleanOptional(taskId) || !cleanOptional(summary)) {
     return undefined;
@@ -225,7 +225,7 @@ export async function appendTaskReviewReminder(pluginConfig, workspaceDir, taskI
   return checkpointTask(storeRoot, taskId, summary, {
     kind: "review_reminder",
     reason: kind,
-    automation: { source: kind }
+    automation: { source: kind, ...meta }
   });
 }
 

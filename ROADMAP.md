@@ -72,10 +72,12 @@ Before any upstream attempt, prove all of this in real use:
 
 Goal: make follow-up visible.
 
-- [ ] pending-review query surface
-- [ ] unresolved-risk rollup
-- [ ] blocked/stale task views
-- [ ] “what needs attention now?” summary
+- [x] pending-review query surface
+- [x] unresolved-risk rollup
+- [x] blocked/stale task views
+- [x] “what needs attention now?” summary
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
 
 ## Phase 7 — handoff composer
 
