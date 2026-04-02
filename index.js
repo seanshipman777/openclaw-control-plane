@@ -1,6 +1,7 @@
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createContextPackerTool } from "./src/context-packer-tool.js";
 import { createTaskLedgerTool } from "./src/task-ledger-tool.js";
+import { createWorkerResultTool } from "./src/worker-result-tool.js";
 
 export default definePluginEntry({
   id: "openclaw-control-plane",
@@ -9,5 +10,6 @@ export default definePluginEntry({
   register(api) {
     api.registerTool((ctx) => createTaskLedgerTool(api, ctx), { names: ["task_ledger"] });
     api.registerTool((ctx) => createContextPackerTool(api, ctx), { names: ["context_packer"] });
+    api.registerTool((ctx) => createWorkerResultTool(api, ctx), { names: ["worker_result"] });
   }
 });

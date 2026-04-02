@@ -31,9 +31,11 @@ Goal: load less, know more.
 
 Goal: cleaner delegation and review.
 
-- [ ] standard result schema
-- [ ] evidence bundle schema
-- [ ] risk + next-step fields
+- [x] standard result schema
+- [x] evidence bundle schema
+- [x] risk + next-step fields
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
 
 ## Phase 4 — validation bundle
 

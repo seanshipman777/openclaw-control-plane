@@ -45,6 +45,22 @@ It focuses on four things:
 This is intentionally **not** a cloud-memory feature and **not** a vendor-specific summarizer.
 It is a control-plane utility that makes the existing memory stack cheaper and cleaner to use.
 
+## Phase 3: worker result contract
+
+The third feature makes worker outputs structured by default.
+
+It captures:
+
+- normalized status
+- summary + details
+- blockers
+- evidence bundle entries
+- risks
+- next steps
+- review/handoff flags
+
+The point is simple: CEO should not have to reconstruct truth from a long worker transcript when a bounded run finishes.
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -59,8 +75,11 @@ It is a control-plane utility that makes the existing memory stack cheaper and c
 - `src/task-ledger-tool.js` — OpenClaw tool surface
 - `src/context-packer.js` — deterministic context packing engine
 - `src/context-packer-tool.js` — OpenClaw tool surface for packed prompt blocks
+- `src/worker-result.js` — worker handoff contract normalizer/validator
+- `src/worker-result-tool.js` — OpenClaw tool surface for structured worker outputs
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
+- `test/worker-result.test.js` — worker result contract tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -88,6 +107,14 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - drops stale items by default when version/hash drift is supplied
 - enforces overall and per-item character budgets
 - returns both packed text and structured drop reasons/details
+
+## Worker result behavior
+
+- normalizes worker outcomes into a versioned schema
+- validates required fields like summary/status
+- structures evidence instead of burying it in prose
+- carries blockers, risks, and next steps explicitly
+- marks review/handoff needs without a second tool
 
 ## Upstream strategy
 
