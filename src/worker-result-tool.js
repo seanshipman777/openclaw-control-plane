@@ -1,4 +1,9 @@
 import { normalizeWorkerResult, renderWorkerResult, validateWorkerResult } from "./worker-result.js";
+import {
+  appendTaskReviewReminder,
+  buildWorkerReviewSummary,
+  workerResultNeedsReview
+} from "./control-plane-automation.js";
 
 const EVIDENCE_ITEM_SCHEMA = {
   oneOf: [
@@ -131,9 +136,24 @@ export function createWorkerResultTool(_api, ctx) {
         messageChannel: ctx.messageChannel
       });
 
+      const reminderTask = workerResultNeedsReview(result, _api.pluginConfig)
+        ? await appendTaskReviewReminder(
+            _api.pluginConfig,
+            ctx.workspaceDir,
+            result.task.taskId,
+            buildWorkerReviewSummary(result),
+            "worker_result"
+          )
+        : undefined;
+
       return {
         content: [{ type: "text", text: renderWorkerResult(result) }],
-        details: result
+        details: {
+          ...result,
+          automation: {
+            reviewReminderTaskId: reminderTask?.id
+          }
+        }
       };
     }
   };

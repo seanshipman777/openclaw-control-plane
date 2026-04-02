@@ -51,6 +51,11 @@ function cleanOptional(value) {
   return text || undefined;
 }
 
+function toEpoch(value) {
+  const parsed = Date.parse(String(value || ""));
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 function ensureObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
@@ -207,20 +212,34 @@ export async function addEvidence(storeRoot, taskId, text) {
   return task;
 }
 
-export async function checkpointTask(storeRoot, taskId, summary) {
+export async function checkpointTask(storeRoot, taskId, summary, meta = {}) {
   const task = await getTask(storeRoot, taskId);
   const checkpointSummary = cleanText(summary);
   if (!checkpointSummary) {
     throw new Error("summary required");
   }
 
-  task.checkpoints.push({
+  const checkpoint = {
     at: nowIso(),
     summary: checkpointSummary,
     status: task.status,
     currentStep: task.currentStep || null,
     nextAction: task.nextAction || null
-  });
+  };
+
+  if (meta && typeof meta === "object" && !Array.isArray(meta)) {
+    if (cleanOptional(meta.kind)) {
+      checkpoint.kind = cleanOptional(meta.kind);
+    }
+    if (cleanOptional(meta.reason)) {
+      checkpoint.reason = cleanOptional(meta.reason);
+    }
+    if (meta.automation && typeof meta.automation === "object" && !Array.isArray(meta.automation)) {
+      checkpoint.automation = { ...meta.automation };
+    }
+  }
+
+  task.checkpoints.push(checkpoint);
   task.updatedAt = nowIso();
   await writeJson(taskPath(storeRoot, task.id), task);
   return task;
@@ -230,10 +249,16 @@ export async function listTasks(storeRoot, options = {}) {
   await ensureStore(storeRoot);
 
   const statusFilter = normalizeStatus(options.status);
+  const statusFilters = Array.isArray(options.statuses)
+    ? options.statuses.map((status) => normalizeStatus(status)).filter(Boolean)
+    : [];
   const includeArchived = Boolean(options.includeArchived);
   const limit = Number.isFinite(options.limit) && options.limit > 0
     ? Math.floor(options.limit)
     : undefined;
+  const sessionKey = cleanOptional(options.sessionKey);
+  const sessionId = cleanOptional(options.sessionId);
+  const agentId = cleanOptional(options.agentId);
 
   const files = await fs.readdir(tasksDir(storeRoot));
   const tasks = [];
@@ -248,6 +273,34 @@ export async function listTasks(storeRoot, options = {}) {
   return tasks
     .filter((task) => includeArchived || task.status !== "archived")
     .filter((task) => !statusFilter || task.status === statusFilter)
+    .filter((task) => statusFilters.length === 0 || statusFilters.includes(task.status))
+    .filter((task) => !sessionKey || task.context?.sessionKey === sessionKey)
+    .filter((task) => !sessionId || task.context?.sessionId === sessionId)
+    .filter((task) => !agentId || task.context?.agentId === agentId)
     .sort((left, right) => String(right.updatedAt).localeCompare(String(left.updatedAt)))
     .slice(0, limit ?? tasks.length);
+}
+
+export function shouldSkipDuplicateCheckpoint(task, summary, windowMs = 0) {
+  if (!Array.isArray(task?.checkpoints) || task.checkpoints.length === 0) {
+    return false;
+  }
+
+  const latest = [...task.checkpoints]
+    .filter((entry) => entry && typeof entry === "object")
+    .sort((left, right) => toEpoch(right.at) - toEpoch(left.at))[0];
+
+  if (!latest) {
+    return false;
+  }
+
+  if (cleanOptional(latest.summary) !== cleanOptional(summary)) {
+    return false;
+  }
+
+  if (!Number.isFinite(windowMs) || windowMs <= 0) {
+    return true;
+  }
+
+  return Date.now() - toEpoch(latest.at) <= windowMs;
 }

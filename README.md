@@ -77,6 +77,19 @@ It captures:
 
 This is how we stop vague success claims and make reviewer handoffs fast.
 
+## Phase 5: automation hooks
+
+The fifth feature makes the control plane react to lifecycle boundaries automatically.
+
+It adds:
+
+- auto-checkpoints before reset/new
+- auto-checkpoints before compaction
+- auto-checkpoints after failed or long agent runs
+- optional review reminders attached to tasks when worker results or validation bundles imply follow-up
+
+This is intentionally conservative: capture handoff state at the moments where context is most likely to get lost.
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -95,10 +108,12 @@ This is how we stop vague success claims and make reviewer handoffs fast.
 - `src/worker-result-tool.js` — OpenClaw tool surface for structured worker outputs
 - `src/validation-bundle.js` — proof-tier validation bundle normalizer/validator
 - `src/validation-bundle-tool.js` — OpenClaw tool surface for reviewer-readable validation artifacts
+- `src/control-plane-automation.js` — lifecycle automation hooks and review reminder helpers
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
 - `test/validation-bundle.test.js` — validation bundle tests
+- `test/control-plane-automation.test.js` — lifecycle automation tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -143,6 +158,13 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - captures check outcomes and unresolved risks in reviewable form
 - optionally carries component scores for reviewer grading
 
+## Automation hook behavior
+
+- checkpoints active/blocked tasks before reset or compaction
+- checkpoints tasks after failed runs or long runs
+- dedupes repeated automatic checkpoints in a short window
+- can attach review reminders to task history when structured outputs indicate follow-up
+
 ## Upstream strategy
 
 Do **not** upstream immediately.
@@ -160,8 +182,20 @@ If that happens, there are two likely paths:
 
 ## Near-term roadmap
 
+### Wave 1 — control-plane spine
+
 1. task ledger plugin
 2. context pack builder
 3. worker result contract
 4. validation bundle format
 5. hook-driven checkpoint automation
+
+### Wave 2 — control-plane leverage
+
+6. review queue / attention inbox
+7. handoff composer
+8. delegation planner
+9. drift monitor
+
+The first five phases create the control-plane substrate.
+The next phases exploit that substrate so the agent can actually query, route, and supervise work more intelligently.

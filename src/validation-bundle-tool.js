@@ -1,4 +1,9 @@
 import {
+  appendTaskReviewReminder,
+  buildValidationReviewSummary,
+  validationBundleNeedsReview
+} from "./control-plane-automation.js";
+import {
   normalizeValidationBundle,
   renderValidationBundle,
   validateValidationBundle
@@ -117,9 +122,24 @@ export function createValidationBundleTool(_api, ctx) {
         messageChannel: ctx.messageChannel
       });
 
+      const reminderTask = validationBundleNeedsReview(bundle, _api.pluginConfig)
+        ? await appendTaskReviewReminder(
+            _api.pluginConfig,
+            ctx.workspaceDir,
+            bundle.target.taskId,
+            buildValidationReviewSummary(bundle),
+            "validation_bundle"
+          )
+        : undefined;
+
       return {
         content: [{ type: "text", text: renderValidationBundle(bundle) }],
-        details: bundle
+        details: {
+          ...bundle,
+          automation: {
+            reviewReminderTaskId: reminderTask?.id
+          }
+        }
       };
     }
   };

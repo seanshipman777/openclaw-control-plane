@@ -1,3 +1,4 @@
+import { registerControlPlaneHooks } from "./src/control-plane-automation.js";
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createContextPackerTool } from "./src/context-packer-tool.js";
 import { createTaskLedgerTool } from "./src/task-ledger-tool.js";
@@ -9,6 +10,7 @@ export default definePluginEntry({
   name: "Control Plane",
   description: "Task-ledger-first control-plane helpers for safer agent execution",
   register(api) {
+    registerControlPlaneHooks(api);
     api.registerTool((ctx) => createTaskLedgerTool(api, ctx), { names: ["task_ledger"] });
     api.registerTool((ctx) => createContextPackerTool(api, ctx), { names: ["context_packer"] });
     api.registerTool((ctx) => createWorkerResultTool(api, ctx), { names: ["worker_result"] });

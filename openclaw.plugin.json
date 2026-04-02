@@ -15,6 +15,56 @@
         "minimum": 1,
         "maximum": 200,
         "description": "Default limit used by task_ledger list when the caller does not provide one."
+      },
+      "automation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Master switch for lifecycle automation hooks and review reminders."
+          },
+          "checkpointOnReset": {
+            "type": "boolean",
+            "description": "Automatically checkpoint active tasks before /new or /reset clears context."
+          },
+          "checkpointOnCompaction": {
+            "type": "boolean",
+            "description": "Automatically checkpoint active tasks before compaction."
+          },
+          "checkpointOnFailure": {
+            "type": "boolean",
+            "description": "Automatically checkpoint active tasks after failed/interrupted runs."
+          },
+          "checkpointOnLongRun": {
+            "type": "boolean",
+            "description": "Automatically checkpoint active tasks after long runs."
+          },
+          "longRunMs": {
+            "type": "integer",
+            "minimum": 1000,
+            "description": "Run-duration threshold for automatic long-run checkpoints."
+          },
+          "dedupeWindowMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Skip repeating the same automatic checkpoint summary within this time window."
+          },
+          "agentScopedFallback": {
+            "type": "boolean",
+            "description": "If no session-bound tasks match, allow automation to fall back to agent-scoped tasks."
+          },
+          "reviewReminders": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Attach review reminder checkpoints to tasks when structured outputs indicate follow-up."
+              }
+            }
+          }
+        }
       }
     }
   }
