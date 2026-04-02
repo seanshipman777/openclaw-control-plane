@@ -33,17 +33,20 @@ export function resolveAutomationConfig(pluginConfig = {}) {
   const automation = pluginConfig && typeof pluginConfig === "object" && !Array.isArray(pluginConfig.automation)
     ? pluginConfig.automation || {}
     : {};
+  const fileCheckpointingEnabled = typeof pluginConfig?.fileCheckpointingEnabled === "boolean"
+    ? pluginConfig.fileCheckpointingEnabled
+    : undefined;
 
   const reviewReminders = automation && typeof automation.reviewReminders === "object" && !Array.isArray(automation.reviewReminders)
     ? automation.reviewReminders
     : {};
 
   return {
-    enabled: automation.enabled !== false,
-    checkpointOnReset: automation.checkpointOnReset !== false,
-    checkpointOnCompaction: automation.checkpointOnCompaction !== false,
-    checkpointOnFailure: automation.checkpointOnFailure !== false,
-    checkpointOnLongRun: automation.checkpointOnLongRun !== false,
+    enabled: typeof automation.enabled === "boolean" ? automation.enabled : fileCheckpointingEnabled !== false,
+    checkpointOnReset: typeof automation.checkpointOnReset === "boolean" ? automation.checkpointOnReset : fileCheckpointingEnabled !== false,
+    checkpointOnCompaction: typeof automation.checkpointOnCompaction === "boolean" ? automation.checkpointOnCompaction : fileCheckpointingEnabled !== false,
+    checkpointOnFailure: typeof automation.checkpointOnFailure === "boolean" ? automation.checkpointOnFailure : fileCheckpointingEnabled !== false,
+    checkpointOnLongRun: typeof automation.checkpointOnLongRun === "boolean" ? automation.checkpointOnLongRun : fileCheckpointingEnabled !== false,
     longRunMs: Number.isFinite(automation.longRunMs) && automation.longRunMs > 0
       ? Math.floor(automation.longRunMs)
       : 120000,

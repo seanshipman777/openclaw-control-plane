@@ -15,6 +15,7 @@ const CONTEXT_ITEM_SCHEMA = {
     priority: { type: "number" },
     pinned: { type: "boolean" },
     updatedAt: { type: "string" },
+    maxAgeMs: { type: "integer", minimum: 1 },
     stale: { type: "boolean" },
     version: { type: "string" },
     currentVersion: { type: "string" },
@@ -56,6 +57,12 @@ const CONTEXT_PACKER_PARAMETERS = {
     includeStale: {
       type: "boolean",
       description: "Keep stale items instead of dropping them."
+    },
+    staleAfterMs: {
+      type: "integer",
+      minimum: 1,
+      maximum: 31536000000,
+      description: "Drop items older than this age when updatedAt is available. Source-grounded by claw-code's memoryAge/memoryScan architecture."
     },
     sourceOrder: {
       type: "array",

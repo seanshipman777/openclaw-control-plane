@@ -42,6 +42,11 @@ It focuses on four things:
 - stale-context filtering
 - strict budget enforcement
 
+Grounding from claw-code source:
+
+- `rust/crates/runtime/src/compact.rs` shows the runtime cares about disciplined context compaction and preserving useful recent state
+- archived subsystem hints (`memdir/memoryAge.ts`, `memdir/memoryScan.ts`) suggest memory freshness/age scoring is part of the intended architecture
+
 This is intentionally **not** a cloud-memory feature and **not** a vendor-specific summarizer.
 It is a control-plane utility that makes the existing memory stack cheaper and cleaner to use.
 
@@ -53,8 +58,10 @@ It captures:
 
 - normalized status
 - summary + details
+- files touched
 - blockers
 - evidence bundle entries
+- validation summary linkage
 - risks
 - next steps
 - review/handoff flags
@@ -87,6 +94,11 @@ It adds:
 - auto-checkpoints before compaction
 - auto-checkpoints after failed or long agent runs
 - optional review reminders attached to tasks when worker results or validation bundles imply follow-up
+
+Grounding from claw-code source:
+
+- `rust/crates/runtime/src/hooks.rs` confirms a hook-pipeline architecture is a core pattern
+- `rust/crates/tools/src/lib.rs` exposes source-surface settings including `fileCheckpointingEnabled`, `autoCompactEnabled`, `autoMemoryEnabled`, and `autoDreamEnabled`
 
 This is intentionally conservative: capture handoff state at the moments where context is most likely to get lost.
 

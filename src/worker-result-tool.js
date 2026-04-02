@@ -81,10 +81,26 @@ const WORKER_RESULT_PARAMETERS = {
       type: "array",
       items: { type: "string" }
     },
+    filesTouched: {
+      type: "array",
+      items: { type: "string" }
+    },
     evidence: {
       type: "array",
       items: EVIDENCE_ITEM_SCHEMA
     },
+    validation: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        summary: { type: "string" },
+        outcome: { type: "string" },
+        bundleId: { type: "string" }
+      }
+    },
+    validationSummary: { type: "string" },
+    validationOutcome: { type: "string" },
+    validationBundleId: { type: "string" },
     risks: {
       type: "array",
       items: RISK_ITEM_SCHEMA

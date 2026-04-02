@@ -172,6 +172,11 @@ export function normalizeWorkerResult(input = {}, meta = {}) {
   const nextSteps = (Array.isArray(payload.nextSteps) ? payload.nextSteps : [])
     .map((entry) => normalizeNextStepItem(entry))
     .filter(Boolean);
+  const filesTouched = cleanStringArray(payload.filesTouched);
+  const validation = ensureObject(payload.validation);
+  const validationSummary = cleanOptional(validation.summary) || cleanOptional(payload.validationSummary);
+  const validationOutcome = cleanOptional(validation.outcome) || cleanOptional(payload.validationOutcome);
+  const validationBundleId = cleanOptional(validation.bundleId) || cleanOptional(payload.validationBundleId);
 
   return {
     schemaVersion: "worker_result.v1",
@@ -191,7 +196,13 @@ export function normalizeWorkerResult(input = {}, meta = {}) {
     summary,
     details: cleanOptional(payload.details),
     blockers,
+    filesTouched,
     evidence,
+    validation: {
+      summary: validationSummary,
+      outcome: validationOutcome,
+      bundleId: validationBundleId
+    },
     risks,
     nextSteps,
     handoff: {
@@ -200,6 +211,7 @@ export function normalizeWorkerResult(input = {}, meta = {}) {
     },
     stats: {
       blockers: blockers.length,
+      filesTouched: filesTouched.length,
       evidence: evidence.length,
       risks: risks.length,
       nextSteps: nextSteps.length
@@ -248,8 +260,24 @@ export function renderWorkerResult(result) {
   if (result.blockers.length) {
     lines.push(`- blockers: ${result.blockers.join(" | ")}`);
   }
+  if (result.filesTouched.length) {
+    lines.push(`- files_touched: ${result.filesTouched.join(" | ")}`);
+  }
   if (result.evidence.length) {
     lines.push(`- evidence_count: ${result.evidence.length}`);
+  }
+  if (result.validation?.summary || result.validation?.outcome || result.validation?.bundleId) {
+    const bits = [];
+    if (result.validation.outcome) {
+      bits.push(result.validation.outcome);
+    }
+    if (result.validation.summary) {
+      bits.push(result.validation.summary);
+    }
+    if (result.validation.bundleId) {
+      bits.push(`bundle=${result.validation.bundleId}`);
+    }
+    lines.push(`- validation: ${bits.join(" | ")}`);
   }
   if (result.risks.length) {
     lines.push(`- risk_count: ${result.risks.length}`);

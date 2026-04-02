@@ -10,6 +10,7 @@ import {
   buildAgentEndCheckpointSummary,
   buildCompactionCheckpointSummary,
   buildResetCheckpointSummary,
+  resolveAutomationConfig,
   shouldCheckpointAgentEnd,
   workerResultNeedsReview,
   validationBundleNeedsReview
@@ -76,4 +77,16 @@ test("automation helper decisions and summaries behave as expected", () => {
   assert.match(buildResetCheckpointSummary({ reason: "reset" }), /reset/);
   assert.match(buildCompactionCheckpointSummary({ messageCount: 20 }), /20/);
   assert.match(buildAgentEndCheckpointSummary({ success: false, error: "boom" }), /boom/);
+});
+
+test("fileCheckpointingEnabled aliases the automation defaults", () => {
+  const disabled = resolveAutomationConfig({ fileCheckpointingEnabled: false });
+  assert.equal(disabled.enabled, false);
+  assert.equal(disabled.checkpointOnReset, false);
+  assert.equal(disabled.checkpointOnCompaction, false);
+
+  const enabled = resolveAutomationConfig({ fileCheckpointingEnabled: true, automation: { checkpointOnFailure: false } });
+  assert.equal(enabled.enabled, true);
+  assert.equal(enabled.checkpointOnReset, true);
+  assert.equal(enabled.checkpointOnFailure, false);
 });

@@ -56,6 +56,34 @@ test("packContext drops stale context by default", () => {
   assert.equal(result.dropped[0].reason, "version_mismatch");
 });
 
+test("packContext can drop context by age threshold", () => {
+  const old = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const fresh = new Date(Date.now() - 30 * 1000).toISOString();
+
+  const result = packContext({
+    staleAfterMs: 60 * 1000,
+    items: [
+      {
+        id: "memory-old",
+        sourceType: "memory",
+        updatedAt: old,
+        text: "Old memory snapshot"
+      },
+      {
+        id: "memory-fresh",
+        sourceType: "memory",
+        updatedAt: fresh,
+        text: "Fresh memory snapshot"
+      }
+    ]
+  });
+
+  assert.equal(result.selected.length, 1);
+  assert.equal(result.selected[0].id, "memory-fresh");
+  assert.equal(result.dropped[0].id, "memory-old");
+  assert.equal(result.dropped[0].reason, "age_limit");
+});
+
 test("packContext enforces char budgets and truncates the first block when needed", () => {
   const result = packContext({
     maxChars: 500,

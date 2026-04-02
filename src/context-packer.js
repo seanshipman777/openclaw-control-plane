@@ -24,6 +24,14 @@ function normalizeTimestamp(value) {
   return Number.isNaN(parsed) ? undefined : new Date(parsed).toISOString();
 }
 
+function normalizePositiveInteger(value) {
+  if (!Number.isFinite(value)) {
+    return undefined;
+  }
+  const next = Math.floor(value);
+  return next > 0 ? next : undefined;
+}
+
 function toEpoch(value) {
   const parsed = Date.parse(String(value || ""));
   return Number.isNaN(parsed) ? 0 : parsed;
@@ -71,7 +79,7 @@ function getSourceRank(sourceOrder, sourceType) {
   return index >= 0 ? index : sourceOrder.length;
 }
 
-function getStaleReason(item) {
+function getStaleReason(item, options = {}) {
   if (item.stale === true) {
     return "stale_flag";
   }
@@ -88,6 +96,15 @@ function getStaleReason(item) {
     return "hash_mismatch";
   }
 
+  const updatedAt = normalizeTimestamp(item.updatedAt);
+  const maxAgeMs = normalizePositiveInteger(item.maxAgeMs) ?? normalizePositiveInteger(options.staleAfterMs);
+  if (updatedAt && maxAgeMs) {
+    const ageMs = Date.now() - toEpoch(updatedAt);
+    if (ageMs > maxAgeMs) {
+      return "age_limit";
+    }
+  }
+
   return undefined;
 }
 
@@ -99,7 +116,7 @@ export function normalizePackItems(items, options = {}) {
       const item = rawItem && typeof rawItem === "object" && !Array.isArray(rawItem) ? rawItem : {};
       const text = cleanText(item.text);
       const sourceType = cleanText(item.sourceType || item.kind || item.scope).toLowerCase() || "other";
-      const staleReason = getStaleReason(item);
+      const staleReason = getStaleReason(item, options);
 
       return {
         id: normalizeOptional(item.id) || `item-${index + 1}`,
@@ -110,6 +127,7 @@ export function normalizePackItems(items, options = {}) {
         priority: Number.isFinite(item.priority) ? Number(item.priority) : 0,
         pinned: Boolean(item.pinned),
         updatedAt: normalizeTimestamp(item.updatedAt),
+        maxAgeMs: normalizePositiveInteger(item.maxAgeMs),
         staleReason,
         sourceRank: getSourceRank(sourceOrder, sourceType),
         fingerprint: normalizeFingerprint(text),
@@ -178,9 +196,10 @@ export function packContext(input = {}) {
     Math.max(100, maxChars)
   );
   const includeStale = Boolean(input.includeStale);
+  const staleAfterMs = normalizePositiveInteger(input.staleAfterMs);
   const sourceOrder = normalizeSourceOrder(input.sourceOrder);
 
-  const candidates = normalizePackItems(input.items, { sourceOrder }).sort(compareItems);
+  const candidates = normalizePackItems(input.items, { sourceOrder, staleAfterMs }).sort(compareItems);
   const selected = [];
   const dropped = [];
   const seenFingerprints = new Map();
@@ -243,6 +262,7 @@ export function packContext(input = {}) {
       maxItems,
       maxItemChars,
       includeStale,
+      staleAfterMs,
       sourceOrder
     },
     stats: {

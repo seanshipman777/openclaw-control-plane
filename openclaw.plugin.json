@@ -16,6 +16,10 @@
         "maximum": 200,
         "description": "Default limit used by task_ledger list when the caller does not provide one."
       },
+      "fileCheckpointingEnabled": {
+        "type": "boolean",
+        "description": "Source-grounded alias from claw-code. When set, it becomes the default enable/disable switch for lifecycle checkpoint automation unless more specific automation settings override it."
+      },
       "automation": {
         "type": "object",
         "additionalProperties": false,
