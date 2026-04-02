@@ -3,6 +3,8 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createContextPackerTool } from "./src/context-packer-tool.js";
 import { createDriftMonitorTool } from "./src/drift-monitor-tool.js";
 import { createHandoffPackTool } from "./src/handoff-pack-tool.js";
+import { registerMemoryDistillerHooks } from "./src/memory-distiller.js";
+import { createMemoryDistillerTool } from "./src/memory-distiller-tool.js";
 import { registerPlanModeHooks } from "./src/plan-mode.js";
 import { createPlanModeTool } from "./src/plan-mode-tool.js";
 import { createReviewQueueTool } from "./src/review-queue-tool.js";
@@ -16,6 +18,7 @@ export default definePluginEntry({
   description: "Task-ledger-first control-plane helpers for safer agent execution",
   register(api) {
     registerControlPlaneHooks(api);
+    registerMemoryDistillerHooks(api);
     registerPlanModeHooks(api);
     api.registerTool((ctx) => createTaskLedgerTool(api, ctx), { names: ["task_ledger"] });
     api.registerTool((ctx) => createContextPackerTool(api, ctx), { names: ["context_packer"] });
@@ -25,5 +28,6 @@ export default definePluginEntry({
     api.registerTool((ctx) => createPlanModeTool(api, ctx), { names: ["plan_mode"] });
     api.registerTool((ctx) => createHandoffPackTool(api, ctx), { names: ["handoff_pack"] });
     api.registerTool((ctx) => createDriftMonitorTool(api, ctx), { names: ["drift_monitor"] });
+    api.registerTool((ctx) => createMemoryDistillerTool(api, ctx), { names: ["memory_distiller"] });
   }
 });

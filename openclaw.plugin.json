@@ -196,6 +196,54 @@
             "description": "Default maximum number of drift items to return."
           }
         }
+      },
+      "autoMemoryEnabled": {
+        "type": "boolean",
+        "description": "Source-grounded alias from claw-code. Enables automatic capture of structured memory candidates from control-plane tool outputs."
+      },
+      "autoDreamEnabled": {
+        "type": "boolean",
+        "description": "Source-grounded alias from claw-code. Enables automatic dream distillation runs on supported lifecycle hooks."
+      },
+      "memoryDistiller": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "autoMemoryEnabled": {
+            "type": "boolean",
+            "description": "Enable automatic capture of structured memory candidates."
+          },
+          "autoDreamEnabled": {
+            "type": "boolean",
+            "description": "Enable automatic dream distillation."
+          },
+          "candidateRetentionDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365,
+            "description": "How many recent days of candidates to consider during distillation by default."
+          },
+          "minScore": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Minimum candidate score required for inclusion in a dream rollup."
+          },
+          "distillLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "description": "Default maximum number of selected candidates in a dream rollup."
+          },
+          "autoDreamOnCompaction": {
+            "type": "boolean",
+            "description": "Run automatic dream distillation after compaction."
+          },
+          "autoDreamOnSessionEnd": {
+            "type": "boolean",
+            "description": "Reserved for future session-end dream distillation once workspace resolution is reliable across environments."
+          }
+        }
       }
     }
   }

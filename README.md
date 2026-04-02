@@ -15,6 +15,7 @@ Current implemented phases:
 - Phase 7 — plan mode + delegation planner
 - Phase 8 — handoff composer
 - Phase 9 — drift monitor
+- Phase 10 — AutoDream / memory distiller
 
 This repo is usable now as a standalone OpenClaw plugin, but it is still an actively evolving control-plane wave rather than a frozen stable release.
 
@@ -42,6 +43,7 @@ Tools:
 - `plan_mode`
 - `handoff_pack`
 - `drift_monitor`
+- `memory_distiller`
 
 Hooks:
 
@@ -131,6 +133,14 @@ Example:
         "activeStaleAfterMs": 172800000,
         "blockedStaleAfterMs": 43200000,
         "missingEvidenceAfterMs": 14400000
+      },
+      "autoMemoryEnabled": true,
+      "autoDreamEnabled": false,
+      "memoryDistiller": {
+        "candidateRetentionDays": 30,
+        "minScore": 35,
+        "distillLimit": 8,
+        "autoDreamOnCompaction": true
       }
     }
   }
@@ -166,6 +176,7 @@ After install, a useful first sequence is:
 4. use plan_mode to turn that into a bounded contract
 5. use handoff_pack to produce a worker/resume/review packet
 6. use drift_monitor to detect rot before it spreads
+7. use memory_distiller to capture/distill durable memory candidates
 ```
 
 ## Phase 1: task ledger plugin
@@ -341,6 +352,28 @@ Grounding from claw-code source:
 
 This is the layer that answers: **where is work quietly rotting and likely to drift further?**
 
+## Phase 10: AutoDream / memory distiller
+
+The tenth feature adds a local-first memory distillation layer inspired by the claw-code `autoMemoryEnabled` and `autoDreamEnabled` surfaces.
+
+It provides:
+
+- automatic capture of structured memory candidates from control-plane artifacts
+- reviewable candidate storage instead of silent hidden memory mutation
+- deterministic dream rollups that dedupe and score candidate memories
+- optional automatic dream distillation after compaction
+
+Grounding from claw-code source:
+
+- `autoMemoryEnabled`
+- `autoDreamEnabled`
+- `memdir/findRelevantMemories.ts`
+- `memdir/memoryAge.ts`
+- `memdir/memoryScan.ts`
+- `services/SessionMemory/sessionMemory.ts`
+
+This is the layer that answers: **what should survive as durable distilled memory instead of being left as transcript sludge?**
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -382,6 +415,8 @@ These exist so future feature work stays:
 - `src/handoff-pack-tool.js` — handoff pack build surface
 - `src/drift-monitor.js` — deterministic drift detection over task and checkpoint state
 - `src/drift-monitor-tool.js` — summary/list/get drift monitor surface
+- `src/memory-distiller.js` — structured memory candidate capture and AutoDream rollup logic
+- `src/memory-distiller-tool.js` — manual capture/list/distill/get dream surface
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
@@ -391,6 +426,7 @@ These exist so future feature work stays:
 - `test/plan-mode.test.js` — plan contract and session plan-mode tests
 - `test/handoff-pack.test.js` — resume/worker/review pack composition tests
 - `test/drift-monitor.test.js` — drift signal and pressure detection tests
+- `test/memory-distiller.test.js` — candidate capture and dream distillation tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Task tool actions
@@ -465,6 +501,15 @@ Actions:
 - `list`
 - `get`
 
+### `memory_distiller`
+Actions:
+
+- `capture`
+- `list_candidates`
+- `distill`
+- `list_dreams`
+- `get_dream`
+
 ## Context packer behavior
 
 - keeps higher-precedence context over lower-precedence duplicates
@@ -523,6 +568,13 @@ Actions:
 - flags missing evidence once work is old enough to expect proof
 - flags reset/compaction pressure from automatic handoff history
 
+## Memory distiller behavior
+
+- captures structured memory candidates from `task_ledger`, `worker_result`, and `validation_bundle`
+- uses source-type scoring, durability, and category classification rather than opaque magic
+- dedupes candidates by normalized fingerprint before dream rollup selection
+- stores reviewable dream artifacts instead of silently mutating external memory systems
+
 ## Upstream strategy
 
 Do **not** upstream immediately.
@@ -564,6 +616,10 @@ Those documents are part of the product, not side notes.
 7. handoff composer
 8. delegation planner
 9. drift monitor
+
+### Wave 3 — memory supervision
+
+10. AutoDream / memory distiller
 
 The first five phases create the control-plane substrate.
 The next phases exploit that substrate so the agent can actually query, route, and supervise work more intelligently.

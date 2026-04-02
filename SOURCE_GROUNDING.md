@@ -77,3 +77,15 @@ It is not a literal one-to-one port.
 - `src/reference_data/commands_snapshot.json` includes `compact`, `review`, and `tasks` surfaces.
 - archived subsystem references expose `memdir/memoryAge.ts` and `memdir/memoryScan.ts`.
 - This grounds `drift_monitor` as a rule-based supervision layer over task age, blockage, and compaction/reset pressure rather than a made-up health score.
+
+## Verified public anchors used for phase 10
+
+### AutoDream + session memory surfaces
+- `rust/crates/tools/src/lib.rs` exposes `autoMemoryEnabled` and `autoDreamEnabled` as public config settings.
+- archived subsystem references expose:
+  - `memdir/findRelevantMemories.ts`
+  - `memdir/memoryAge.ts`
+  - `memdir/memoryScan.ts`
+  - `services/SessionMemory/sessionMemory.ts`
+  - `services/SessionMemory/sessionMemoryUtils.ts`
+- This grounds `memory_distiller` as a local-first structured memory distillation layer rather than an invented summarizer detached from the public claw-code memory architecture.

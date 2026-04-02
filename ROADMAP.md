@@ -122,9 +122,19 @@ Goal: detect operational rot early.
 - [ ] live OpenClaw install test
 - [ ] real-session usability pass
 
+## Phase 10 — AutoDream / memory distiller
+
+Goal: distill durable memory from structured artifacts without building a second opaque memory system.
+
+- [x] structured memory candidate capture
+- [x] candidate scoring + durability classification
+- [x] dream rollup generation
+- [x] compaction-triggered auto-dream hook
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
+
 ## Recommended next move
 
-If building continues immediately, do **Phase 6 — review queue** next.
+If building continues immediately after Phase 10, do a **wave-2/wave-3 usability pass** before adding more feature surfaces.
 
-Reason: the plugin now captures structure well, but it still needs a first-class way to ask
-"what requires attention right now?" without reading raw task files.
+Reason: the control plane now has enough structure that the biggest remaining risk is not missing features — it is proving the current abstractions in real use and tightening anything that feels bureaucratic or leaky.
