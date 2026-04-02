@@ -1,91 +1,151 @@
 # Source Grounding Notes
 
-This plugin wave is **inspired by and adapted from** the public `ultraworkers/claw-code` source.
+This plugin is **inspired by and adapted from** the public `ultraworkers/claw-code` source.
 It is not a literal one-to-one port.
 
-## Verified public anchors used for phases 1–5
+## Grounding policy
 
-### Task / workflow surface
-- `PARITY.md` documents missing TS `Task*` and review/workflow surfaces in the Rust port.
-- This is the main grounding for `task_ledger`, `worker_result`, and `validation_bundle` as missing-but-useful control-plane structure.
+- Port directly when the public implementation is clear.
+- Adapt carefully when the public source exposes a concept/config surface but not the full runtime path.
+- Say so plainly when something is an extrapolation rather than a direct port.
+- Do not claim parity beyond what the public source actually shows.
 
-### Context compaction + memory freshness
-- `rust/crates/runtime/src/compact.rs` shows the runtime already treats context compaction as a first-class concern.
-- Archived subsystem references expose:
-  - `memdir/findRelevantMemories.ts`
-  - `memdir/memoryAge.ts`
-  - `memdir/memoryScan.ts`
-  - `services/SessionMemory/sessionMemory.ts`
-- This grounds `context_packer` as a deterministic, local-first context shaping utility rather than an invented memory stack.
+## Capability map
 
-### Hook pipeline + checkpointing
-- `rust/crates/runtime/src/hooks.rs` shows a real hook runner and event pipeline.
-- `rust/crates/tools/src/lib.rs` exposes config settings:
-  - `autoCompactEnabled`
-  - `autoMemoryEnabled`
-  - `autoDreamEnabled`
-  - `fileCheckpointingEnabled`
-- This grounds lifecycle automation and checkpoint behavior as source-aligned concepts.
+### Task and workflow surfaces
+Public anchors:
+- `PARITY.md`
+- task-related tool and command surfaces in the archived snapshots
 
-## Design stance
+Used to ground:
+- `task_ledger`
+- `worker_result`
+- `validation_bundle`
 
-- Directly port when the public implementation is clear.
-- Adapt carefully when the public source exposes the concept/config surface but not the full runtime path.
-- Avoid claiming parity where the claw-code source only shows an intent or stub.
+Why it matters:
+These surfaces justify explicit structured control-plane state instead of leaving work buried in transcripts.
 
-## Verified public anchors used for phase 6
+### Context compaction and memory freshness
+Public anchors:
+- `rust/crates/runtime/src/compact.rs`
+- `memdir/findRelevantMemories.ts`
+- `memdir/memoryAge.ts`
+- `memdir/memoryScan.ts`
+- `services/SessionMemory/sessionMemory.ts`
 
-### Review + tasks surfaces
-- `src/reference_data/commands_snapshot.json` includes `review` and `tasks` commands.
-- `src/reference_data/tools_snapshot.json` includes:
+Used to ground:
+- `context_packer`
+- freshness/age-based context filtering
+
+Why it matters:
+The public source clearly treats context compaction and memory freshness as first-class concerns.
+
+### Hook pipeline and checkpointing
+Public anchors:
+- `rust/crates/runtime/src/hooks.rs`
+- `rust/crates/tools/src/lib.rs`
+
+Relevant surfaced settings:
+- `autoCompactEnabled`
+- `autoMemoryEnabled`
+- `autoDreamEnabled`
+- `fileCheckpointingEnabled`
+
+Used to ground:
+- lifecycle automation
+- checkpoint hooks
+- review-reminder automation
+
+Why it matters:
+These source surfaces justify implementing control-plane behavior through plugin hooks rather than ad hoc side channels.
+
+### Review and task attention
+Public anchors:
+- `commands_snapshot.json` entries for `review` and `tasks`
+- `tools_snapshot.json` entries including:
   - `TaskCreateTool`
   - `TaskGetTool`
   - `TaskListTool`
   - `TaskOutputTool`
   - `TaskStopTool`
-- `TaskUpdateTool`
-- This grounds `review_queue` as a task/review attention layer rather than a made-up dashboard.
+  - `TaskUpdateTool`
 
-## Verified public anchors used for phase 7
+Used to ground:
+- `review_queue`
 
-### Plan mode + planning surfaces
-- `src/reference_data/commands_snapshot.json` includes `plan` and `ultraplan` commands.
-- `src/reference_data/tools_snapshot.json` includes:
+Why it matters:
+This is the source basis for a task/review attention surface instead of a made-up dashboard.
+
+### Planning and bounded delegation
+Public anchors:
+- `commands_snapshot.json` entries for `plan` and `ultraplan`
+- `tools_snapshot.json` entries including:
   - `EnterPlanModeTool`
   - `ExitPlanModeV2Tool`
-- `planAgent`
-- This grounds `plan_mode` as a planning and bounded-delegation layer rather than an invented workflow abstraction.
+  - `planAgent`
 
-## Verified public anchors used for phase 8
+Used to ground:
+- `plan_mode`
+- bounded execution contracts
 
-### Agent memory + resume + task output surfaces
-- `src/reference_data/tools_snapshot.json` includes:
+Why it matters:
+These surfaces justify treating planning as a first-class operating mode rather than an informal prompt convention.
+
+### Agent memory, resume, and execution packets
+Public anchors:
+- `tools_snapshot.json` entries including:
   - `agentMemory`
   - `agentMemorySnapshot`
   - `resumeAgent`
   - `runAgent`
   - `forkSubagent`
-- `spawnMultiAgent`
-- `TaskOutputTool`
-- `src/reference_data/subsystems/assistant.json` references `assistant/sessionHistory.ts`.
-- This grounds `handoff_pack` as a compact execution/recovery packet layer rather than a made-up summary feature.
+  - `spawnMultiAgent`
+  - `TaskOutputTool`
+- `subsystems/assistant.json` references `assistant/sessionHistory.ts`
 
-## Verified public anchors used for phase 9
+Used to ground:
+- `handoff_pack`
 
-### Drift + compaction + age signals
-- `rust/crates/runtime/src/compact.rs` shows compaction pressure and preserved-summary behavior are first-class runtime concerns.
-- `src/reference_data/commands_snapshot.json` includes `compact`, `review`, and `tasks` surfaces.
-- archived subsystem references expose `memdir/memoryAge.ts` and `memdir/memoryScan.ts`.
-- This grounds `drift_monitor` as a rule-based supervision layer over task age, blockage, and compaction/reset pressure rather than a made-up health score.
+Why it matters:
+These surfaces justify compact execution/recovery packets instead of relying on transcript replay alone.
 
-## Verified public anchors used for phase 10
+### Drift and operational rot signals
+Public anchors:
+- `rust/crates/runtime/src/compact.rs`
+- `commands_snapshot.json` entries for `compact`, `review`, and `tasks`
+- `memdir/memoryAge.ts`
+- `memdir/memoryScan.ts`
 
-### AutoDream + session memory surfaces
-- `rust/crates/tools/src/lib.rs` exposes `autoMemoryEnabled` and `autoDreamEnabled` as public config settings.
-- archived subsystem references expose:
+Used to ground:
+- `drift_monitor`
+
+Why it matters:
+These surfaces justify a rule-based supervision layer over age, blockage, and compaction/reset pressure.
+
+### AutoDream and session-memory distillation
+Public anchors:
+- `rust/crates/tools/src/lib.rs` surfaced settings:
+  - `autoMemoryEnabled`
+  - `autoDreamEnabled`
+- archived subsystem references:
   - `memdir/findRelevantMemories.ts`
   - `memdir/memoryAge.ts`
   - `memdir/memoryScan.ts`
   - `services/SessionMemory/sessionMemory.ts`
   - `services/SessionMemory/sessionMemoryUtils.ts`
-- This grounds `memory_distiller` as a local-first structured memory distillation layer rather than an invented summarizer detached from the public claw-code memory architecture.
+
+Used to ground:
+- `memory_distiller`
+
+Why it matters:
+These surfaces justify a local-first structured memory distillation layer instead of a second opaque memory system.
+
+## Interpretation rule
+
+If a feature in this plugin is:
+
+- **directly implemented from a clear public surface** → say so
+- **adapted from adjacent public signals** → say so
+- **our own extension beyond the source** → say so
+
+That distinction matters for both technical honesty and future upstream discussions.

@@ -1,140 +1,113 @@
 # Roadmap
 
-## Principle
+## Product direction
 
-Ship the smallest high-leverage slice first. Keep OpenClaw core untouched until the extension earns its way in.
+`openclaw-control-plane` is intended to be a practical control-plane plugin for OpenClaw:
 
-## Build doctrine
+- structured task state
+- deterministic context shaping
+- reviewable execution artifacts
+- cleaner handoffs and session recovery
+- operational supervision
+- local-first memory distillation
 
-The repo-level operating setup for continued development lives in:
+The goal is not feature sprawl. The goal is durable leverage.
 
-- `BUILD_SYSTEM.md`
-- `PUBLIC_REPO_SAFETY.md`
+## Current capability areas
 
-These documents are part of the build system, not optional notes.
+### Structured execution state
+- [x] explicit task store
+- [x] checkpoints
+- [x] evidence capture
+- [x] close/update/list flows
 
-## Phase 1 — task ledger
-
-Goal: structured short-horizon state.
-
-- [x] standalone repo
-- [x] plugin manifest + entrypoint
-- [x] file-backed task store
-- [x] `task_ledger` tool
-- [x] store-level tests
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 2 — context packer
-
-Goal: load less, know more.
-
-- [x] context source precedence
-- [x] file dedupe
-- [x] budget enforcement
+### Context shaping
+- [x] source precedence
+- [x] dedupe
 - [x] stale-context detection
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
+- [x] budget enforcement
 
-## Phase 3 — worker contract
+### Structured execution artifacts
+- [x] worker result contract
+- [x] validation bundle contract
+- [x] review reminder metadata
 
-Goal: cleaner delegation and review.
-
-- [x] standard result schema
-- [x] evidence bundle schema
-- [x] risk + next-step fields
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 4 — validation bundle
-
-Goal: stop vague success claims.
-
-- [x] proof tier model
-- [x] structured before/after artifacts
-- [x] unresolved-risk section
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 5 — automation hooks
-
-Goal: checkpoint without nagging.
-
-- [x] automatic task checkpoint hooks
-- [x] session reset handoff hooks
+### Lifecycle automation
+- [x] automatic checkpoints before reset
+- [x] automatic checkpoints before compaction
+- [x] automatic checkpoints after failed or long runs
 - [x] optional review reminders
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
 
-## Wave 1 exit criteria
+### Review and planning
+- [x] review queue / attention inbox
+- [x] bounded plan contracts
+- [x] session-scoped plan mode
 
-The original five phases are the **control-plane spine**.
+### Handoff and supervision
+- [x] resume/worker/review/status handoff packs
+- [x] drift detection for stale tasks, repeated blockers, missing evidence, and reset/compaction pressure
 
-Before any upstream attempt, prove all of this in real use:
-
-- [ ] task-ledger usage across multiple real tasks
-- [ ] compaction/reset handoffs actually reduce drift
-- [ ] worker/result/validation schemas survive several review cycles unchanged
-- [ ] automation hooks help more than they annoy
-
-## Phase 6 — review queue
-
-Goal: make follow-up visible.
-
-- [x] pending-review query surface
-- [x] unresolved-risk rollup
-- [x] blocked/stale task views
-- [x] “what needs attention now?” summary
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 7 — plan mode + delegation planner
-
-Goal: turn triage into bounded execution contracts.
-
-- [x] task → plan contract generator
-- [x] acceptance criteria wiring
-- [x] proof-tier expectation wiring
-- [x] expected output schema wiring
-- [x] session-scoped plan mode enter/exit
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 8 — handoff composer
-
-Goal: generate compact, reusable handoff packets.
-
-- [x] session-resume pack
-- [x] subagent brief pack
-- [x] human-readable status pack
-- [x] lane-specific context shaping
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 9 — drift monitor
-
-Goal: detect operational rot early.
-
-- [x] stale-task detection
-- [x] repeated-blocker detection
-- [x] missing-evidence detection
-- [x] reset/compaction pressure signals
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
-
-## Phase 10 — AutoDream / memory distiller
-
-Goal: distill durable memory from structured artifacts without building a second opaque memory system.
-
-- [x] structured memory candidate capture
+### Memory distillation
+- [x] structured candidate capture
 - [x] candidate scoring + durability classification
 - [x] dream rollup generation
 - [x] compaction-triggered auto-dream hook
-- [ ] live OpenClaw install test
-- [ ] real-session usability pass
 
-## Recommended next move
+## Validation still needed
 
-If building continues immediately after Phase 10, do a **wave-2/wave-3 usability pass** before adding more feature surfaces.
+The main risk now is not missing features.
+The main risk is shipping abstractions that look good in code but feel bureaucratic in real use.
 
-Reason: the control plane now has enough structure that the biggest remaining risk is not missing features — it is proving the current abstractions in real use and tightening anything that feels bureaucratic or leaky.
+### Real-use validation checklist
+- [ ] task state proves useful across multiple real tasks
+- [ ] compaction/reset handoffs measurably reduce drift
+- [ ] worker/result/validation schemas survive repeated review cycles unchanged
+- [ ] review queue actually improves triage speed
+- [ ] plan mode helps more than it constrains
+- [ ] handoff packs get reused in live recovery/delegation
+- [ ] drift monitor catches real rot without becoming noise
+- [ ] memory distiller produces useful rollups instead of clutter
+
+### Runtime validation checklist
+- [ ] live install validation on recent stable OpenClaw
+- [ ] compatibility check across more than one OpenClaw environment
+- [ ] plugin load/reload behavior verified after upgrades
+- [ ] hook behavior verified under reset and compaction pressure
+
+## Near-term focus
+
+### 1. Usability pass
+Refine anything that feels too ceremony-heavy.
+
+### 2. Benchmarking and evaluation
+Measure:
+- token savings from context shaping
+- recovery quality after reset/compaction
+- review speed with structured artifacts vs transcript-only review
+- memory distillation quality and noise rate
+
+### 3. Public hardening
+Before broader adoption:
+- tighten docs further if needed
+- keep defaults safe for strangers
+- verify no local-environment assumptions leak into product behavior
+
+## Future exploration
+
+These are interesting, but should come after the current capability set proves itself:
+
+- richer review workflows
+- stronger delegation lane support
+- memory distillation writeback adapters
+- candidate promotion approval flows
+- eventual upstream proposals for the most durable abstractions
+
+## Build and release doctrine
+
+Repo-level development and publication rules live in:
+
+- `BUILD_SYSTEM.md`
+- `PUBLIC_REPO_SAFETY.md`
+- `SOURCE_GROUNDING.md`
+
+They are part of the product-development process, not optional notes.
