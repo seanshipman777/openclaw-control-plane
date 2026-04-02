@@ -83,3 +83,34 @@ test("buildReviewQueue filters stale and review items", async (t) => {
   assert.equal(queue.stats.stale >= 1, true);
   assert.match(formatReviewQueueSummary(queue), /Review queue/);
 });
+
+test("buildReviewQueue summary stats are not truncated by output limit", async (t) => {
+  const dir = await withTempDir(t);
+  const pluginConfig = { storeDir: ".openclaw-control-plane" };
+  const storeRoot = resolveStoreRoot({ pluginConfig, workspaceDir: dir });
+
+  for (let i = 0; i < 5; i++) {
+    const task = await createTask(storeRoot, {
+      title: `Review ${i}`,
+      objective: `Need review ${i}`,
+      status: "blocked",
+      blockers: ["waiting"]
+    }, { workspaceDir: dir, sessionKey: "session:a" });
+    await appendTaskReviewReminder(pluginConfig, dir, task.id, "Automatic review reminder from worker result.", "worker_result", {
+      status: "partial",
+      needsReview: true,
+      riskCount: 1
+    });
+  }
+
+  const queue = await buildReviewQueue(storeRoot, {
+    pluginConfig,
+    filter: "attention",
+    sessionKey: "session:a",
+    limit: 2
+  });
+
+  assert.equal(queue.items.length, 2);
+  assert.equal(queue.stats.total, 5);
+  assert.equal(queue.stats.needsReview, 5);
+});

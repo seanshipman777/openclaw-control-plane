@@ -175,7 +175,6 @@ export async function buildReviewQueue(storeRoot, options = {}) {
   const tasks = await listTasks(storeRoot, {
     includeArchived: Boolean(options.includeArchived),
     includeDone: Boolean(options.includeDone),
-    limit: options.limit,
     sessionKey: options.sessionKey,
     sessionId: options.sessionId,
     agentId: options.agentId

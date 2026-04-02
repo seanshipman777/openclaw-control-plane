@@ -103,3 +103,42 @@ test("buildDriftMonitor summarizes stale and missing evidence work", async (t) =
   assert.equal(report.stats.missingEvidence >= 1, true);
   assert.match(formatDriftMonitorSummary(report), /Drift monitor/);
 });
+
+test("buildDriftMonitor summary stats are not truncated by output limit", async (t) => {
+  const dir = await withTempDir(t);
+  const pluginConfig = {
+    storeDir: ".openclaw-control-plane",
+    driftMonitor: {
+      activeStaleAfterMs: 1000,
+      missingEvidenceAfterMs: 1000
+    }
+  };
+  const storeRoot = resolveStoreRoot({ pluginConfig, workspaceDir: dir });
+
+  for (let i = 0; i < 4; i++) {
+    await createTask(storeRoot, {
+      title: `Stale ${i}`,
+      objective: `Needs movement ${i}`,
+      status: "active"
+    }, { workspaceDir: dir, sessionKey: "session:a" });
+  }
+
+  const tasksPath = path.join(storeRoot, "tasks");
+  for (const file of await fs.readdir(tasksPath)) {
+    const old = new Date(Date.now() - 10_000);
+    await fs.utimes(path.join(tasksPath, file), old, old);
+  }
+
+  const report = await buildDriftMonitor(storeRoot, {
+    pluginConfig,
+    filter: "drifting",
+    sessionKey: "session:a",
+    nowMs: Date.now() + 20_000,
+    staleAfterMs: 1000,
+    limit: 2
+  });
+
+  assert.equal(report.items.length, 2);
+  assert.equal(report.stats.total, 4);
+  assert.equal(report.stats.stale, 4);
+});

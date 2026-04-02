@@ -200,7 +200,6 @@ export async function buildDriftMonitor(storeRoot, options = {}) {
   const reviewConfig = resolveReviewQueueConfig(options.pluginConfig);
   const tasks = await listTasks(storeRoot, {
     includeArchived: Boolean(options.includeArchived),
-    limit: options.limit,
     sessionKey: options.sessionKey,
     sessionId: options.sessionId,
     agentId: options.agentId

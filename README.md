@@ -307,6 +307,7 @@ See `ROADMAP.md` for the current validation and product direction.
 
 ```bash
 npm test
+npm run benchmark
 ```
 
 After changes, reinstall/sync the plugin into OpenClaw and verify load with:
@@ -314,3 +315,5 @@ After changes, reinstall/sync the plugin into OpenClaw and verify load with:
 ```bash
 openclaw plugins inspect openclaw-control-plane
 ```
+
+`npm run benchmark` runs a synthetic regression benchmark over the main capability areas. It is intended for change tracking and tuning, not for absolute performance claims.
