@@ -165,6 +165,28 @@ Grounding from claw-code source:
 
 This is the layer that answers: **what exact packet should I hand off to continue or delegate this work cleanly?**
 
+## Phase 9: drift monitor
+
+The ninth feature detects operational rot before it becomes transcript archaeology.
+
+It provides:
+
+- stale-task detection
+- repeated-blocker detection
+- missing-evidence detection
+- reset/compaction pressure detection
+
+Grounding from claw-code source:
+
+- `rust/crates/runtime/src/compact.rs`
+- `commands/compact/*`
+- `commands/tasks/*`
+- `commands/review*`
+- `memdir/memoryAge.ts`
+- `memdir/memoryScan.ts`
+
+This is the layer that answers: **where is work quietly rotting and likely to drift further?**
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -204,6 +226,8 @@ These exist so future feature work stays:
 - `src/plan-mode-tool.js` — build/enter/status/exit plan mode surface
 - `src/handoff-pack.js` — compact resume/worker/review/status packet composer
 - `src/handoff-pack-tool.js` — handoff pack build surface
+- `src/drift-monitor.js` — deterministic drift detection over task and checkpoint state
+- `src/drift-monitor-tool.js` — summary/list/get drift monitor surface
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
@@ -212,6 +236,7 @@ These exist so future feature work stays:
 - `test/review-queue.test.js` — review queue scoring and filtering tests
 - `test/plan-mode.test.js` — plan contract and session plan-mode tests
 - `test/handoff-pack.test.js` — resume/worker/review pack composition tests
+- `test/drift-monitor.test.js` — drift signal and pressure detection tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -283,6 +308,13 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - keeps packets compact and mode-specific instead of dumping raw task files
 - resolves the current session task automatically when possible
 - is designed for reuse by future delegation/resume flows
+
+## Drift monitor behavior
+
+- detects stale work using explicit age thresholds
+- flags repeated blockage through checkpoint history
+- flags missing evidence once work is old enough to expect proof
+- flags reset/compaction pressure from automatic handoff history
 
 ## Upstream strategy
 

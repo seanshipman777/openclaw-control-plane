@@ -144,6 +144,58 @@
             "description": "Default number of plan steps to include in generated handoff packs."
           }
         }
+      },
+      "driftMonitor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "activeStaleAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Default stale threshold for active tasks in drift detection."
+          },
+          "blockedStaleAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Default stale threshold for blocked tasks in drift detection."
+          },
+          "doneStaleAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Default stale threshold for done tasks when drift monitor includes them."
+          },
+          "missingEvidenceAfterMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Minimum task age before missing evidence becomes a drift finding."
+          },
+          "pressureWindowMs": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Lookback window for reset/compaction pressure signals."
+          },
+          "repeatedBlockedCheckpointThreshold": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Blocked-checkpoint count that marks repeated blocker drift."
+          },
+          "compactionPressureCheckpointThreshold": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Compaction auto-handoff count that marks compaction pressure."
+          },
+          "resetPressureCheckpointThreshold": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Reset auto-handoff count that marks reset pressure."
+          },
+          "defaultListLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Default maximum number of drift items to return."
+          }
+        }
       }
     }
   }

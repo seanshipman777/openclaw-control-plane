@@ -65,7 +65,15 @@ It is not a literal one-to-one port.
   - `resumeAgent`
   - `runAgent`
   - `forkSubagent`
-  - `spawnMultiAgent`
-  - `TaskOutputTool`
+- `spawnMultiAgent`
+- `TaskOutputTool`
 - `src/reference_data/subsystems/assistant.json` references `assistant/sessionHistory.ts`.
 - This grounds `handoff_pack` as a compact execution/recovery packet layer rather than a made-up summary feature.
+
+## Verified public anchors used for phase 9
+
+### Drift + compaction + age signals
+- `rust/crates/runtime/src/compact.rs` shows compaction pressure and preserved-summary behavior are first-class runtime concerns.
+- `src/reference_data/commands_snapshot.json` includes `compact`, `review`, and `tasks` surfaces.
+- archived subsystem references expose `memdir/memoryAge.ts` and `memdir/memoryScan.ts`.
+- This grounds `drift_monitor` as a rule-based supervision layer over task age, blockage, and compaction/reset pressure rather than a made-up health score.

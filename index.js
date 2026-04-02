@@ -1,6 +1,7 @@
 import { registerControlPlaneHooks } from "./src/control-plane-automation.js";
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createContextPackerTool } from "./src/context-packer-tool.js";
+import { createDriftMonitorTool } from "./src/drift-monitor-tool.js";
 import { createHandoffPackTool } from "./src/handoff-pack-tool.js";
 import { registerPlanModeHooks } from "./src/plan-mode.js";
 import { createPlanModeTool } from "./src/plan-mode-tool.js";
@@ -23,5 +24,6 @@ export default definePluginEntry({
     api.registerTool((ctx) => createReviewQueueTool(api, ctx), { names: ["review_queue"] });
     api.registerTool((ctx) => createPlanModeTool(api, ctx), { names: ["plan_mode"] });
     api.registerTool((ctx) => createHandoffPackTool(api, ctx), { names: ["handoff_pack"] });
+    api.registerTool((ctx) => createDriftMonitorTool(api, ctx), { names: ["drift_monitor"] });
   }
 });

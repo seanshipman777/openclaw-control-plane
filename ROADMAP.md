@@ -115,10 +115,12 @@ Goal: generate compact, reusable handoff packets.
 
 Goal: detect operational rot early.
 
-- [ ] stale-task detection
-- [ ] repeated-blocker detection
-- [ ] missing-evidence detection
-- [ ] reset/compaction pressure signals
+- [x] stale-task detection
+- [x] repeated-blocker detection
+- [x] missing-evidence detection
+- [x] reset/compaction pressure signals
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
 
 ## Recommended next move
 
