@@ -1,4 +1,5 @@
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
+import { createContextPackerTool } from "./src/context-packer-tool.js";
 import { createTaskLedgerTool } from "./src/task-ledger-tool.js";
 
 export default definePluginEntry({
@@ -7,5 +8,6 @@ export default definePluginEntry({
   description: "Task-ledger-first control-plane helpers for safer agent execution",
   register(api) {
     api.registerTool((ctx) => createTaskLedgerTool(api, ctx), { names: ["task_ledger"] });
+    api.registerTool((ctx) => createContextPackerTool(api, ctx), { names: ["context_packer"] });
   }
 });

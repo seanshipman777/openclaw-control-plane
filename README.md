@@ -31,6 +31,20 @@ It gives the agent an explicit short-horizon control plane:
 
 This is the fastest way to improve resumability and reduce transcript sludge.
 
+## Phase 2: context packer
+
+The next feature is a native OpenClaw tool that deterministically packs context.
+
+It focuses on four things:
+
+- source precedence
+- dedupe
+- stale-context filtering
+- strict budget enforcement
+
+This is intentionally **not** a cloud-memory feature and **not** a vendor-specific summarizer.
+It is a control-plane utility that makes the existing memory stack cheaper and cleaner to use.
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -43,7 +57,10 @@ This is the fastest way to improve resumability and reduce transcript sludge.
 - `index.js` — plugin entrypoint
 - `src/task-store.js` — file-backed task ledger store
 - `src/task-ledger-tool.js` — OpenClaw tool surface
+- `src/context-packer.js` — deterministic context packing engine
+- `src/context-packer-tool.js` — OpenClaw tool surface for packed prompt blocks
 - `test/task-store.test.js` — store-level tests
+- `test/context-packer.test.js` — context packing tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -64,6 +81,13 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - `checkpoint`
 - `add_evidence`
 - `close`
+
+## Context packer behavior
+
+- keeps higher-precedence context over lower-precedence duplicates
+- drops stale items by default when version/hash drift is supplied
+- enforces overall and per-item character budgets
+- returns both packed text and structured drop reasons/details
 
 ## Upstream strategy
 

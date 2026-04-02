@@ -20,10 +20,12 @@ Goal: structured short-horizon state.
 
 Goal: load less, know more.
 
-- [ ] context source precedence
-- [ ] file dedupe
-- [ ] budget enforcement
-- [ ] stale-context detection
+- [x] context source precedence
+- [x] file dedupe
+- [x] budget enforcement
+- [x] stale-context detection
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
 
 ## Phase 3 — worker contract
 
