@@ -2,9 +2,57 @@
 
 Task-ledger-first control-plane extensions for safe OpenClaw upgrades.
 
-## Why this exists
+## Status
 
-The right first move is **not** to patch OpenClaw core directly.
+Current implemented phases:
+
+- Phase 1 — task ledger
+- Phase 2 — context packer
+- Phase 3 — worker result contract
+- Phase 4 — validation bundle
+- Phase 5 — automation hooks
+- Phase 6 — review queue
+- Phase 7 — plan mode + delegation planner
+- Phase 8 — handoff composer
+- Phase 9 — drift monitor
+
+This repo is usable now as a standalone OpenClaw plugin, but it is still an actively evolving control-plane wave rather than a frozen stable release.
+
+## Compatibility
+
+- OpenClaw plugin format: `openclaw`
+- Package type: ESM
+- Declared dependency floor: `openclaw ^2026.3.24`
+
+Recommended:
+
+- run on a recent stable OpenClaw release with plugin hooks enabled
+- verify plugin load with `openclaw plugins inspect openclaw-control-plane`
+- restart Gateway after install/update so hooks and tools reload cleanly
+
+## What this plugin adds
+
+Tools:
+
+- `task_ledger`
+- `context_packer`
+- `worker_result`
+- `validation_bundle`
+- `review_queue`
+- `plan_mode`
+- `handoff_pack`
+- `drift_monitor`
+
+Hooks:
+
+- `before_reset`
+- `before_compaction`
+- `agent_end`
+- `before_prompt_build`
+
+## Why another plugin instead of patching core?
+
+Because the right first move is **not** to patch OpenClaw core directly.
 
 The safer path is:
 
@@ -13,6 +61,112 @@ The safer path is:
 3. upstream only the pieces that prove durable and broadly useful
 
 That keeps us fast without turning the main runtime into an experiment.
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/seanshipman777/openclaw-control-plane.git
+cd openclaw-control-plane
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Install into OpenClaw
+
+```bash
+openclaw plugins install /absolute/path/to/openclaw-control-plane
+```
+
+Inspect the plugin:
+
+```bash
+openclaw plugins inspect openclaw-control-plane
+```
+
+If your environment does not hot-reload plugin hooks/tools, restart Gateway after install/update.
+
+## Minimal configuration
+
+This plugin works with defaults, but most users will want an explicit config block.
+
+Example:
+
+```json
+{
+  "plugins": {
+    "openclaw-control-plane": {
+      "storeDir": ".openclaw-control-plane",
+      "automation": {
+        "enabled": true,
+        "checkpointOnReset": true,
+        "checkpointOnCompaction": true,
+        "checkpointOnFailure": true,
+        "checkpointOnLongRun": true,
+        "longRunMs": 120000,
+        "reviewReminders": {
+          "enabled": true
+        }
+      },
+      "reviewQueue": {
+        "activeStaleAfterMs": 86400000,
+        "blockedStaleAfterMs": 21600000
+      },
+      "planMode": {
+        "enabled": true,
+        "planningOnlyDefault": true,
+        "injectPromptContext": true
+      },
+      "handoffPack": {
+        "defaultEvidenceLimit": 3,
+        "defaultCheckpointLimit": 3,
+        "defaultStepLimit": 5
+      },
+      "driftMonitor": {
+        "activeStaleAfterMs": 172800000,
+        "blockedStaleAfterMs": 43200000,
+        "missingEvidenceAfterMs": 14400000
+      }
+    }
+  }
+}
+```
+
+## Environment notes
+
+This plugin is designed to be portable across different OpenClaw setups.
+
+That means:
+
+- `storeDir` can be relative to the active workspace or absolute
+- defaults are meant to be safe, not aggressively opinionated
+- automation is structured to help both single-agent and multi-lane setups
+- nothing here assumes the same host OS, filesystem layout, or memory stack as the original development environment
+
+If your setup differs from ours, the main things you may want to tune are:
+
+- stale thresholds
+- review reminder behavior
+- plan-mode prompt injection
+- state storage location
+
+## Quick start
+
+After install, a useful first sequence is:
+
+```text
+1. create a task with task_ledger
+2. update/checkpoint it during real work
+3. use review_queue to see what needs attention
+4. use plan_mode to turn that into a bounded contract
+5. use handoff_pack to produce a worker/resume/review packet
+6. use drift_monitor to detect rot before it spreads
+```
 
 ## Phase 1: task ledger plugin
 
@@ -239,15 +393,6 @@ These exist so future feature work stays:
 - `test/drift-monitor.test.js` — drift signal and pressure detection tests
 - `openclaw.plugin.json` — plugin manifest
 
-## Install later for live testing
-
-```bash
-npm install
-openclaw plugins install /absolute/path/to/openclaw-control-plane
-```
-
-Then enable it in config if needed and verify the `task_ledger` tool appears.
-
 ## Task tool actions
 
 - `create`
@@ -257,6 +402,68 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - `checkpoint`
 - `add_evidence`
 - `close`
+
+## Tool cheat sheet
+
+### `task_ledger`
+Actions:
+
+- `create`
+- `get`
+- `list`
+- `update`
+- `checkpoint`
+- `add_evidence`
+- `close`
+
+### `context_packer`
+Purpose:
+
+- rank context by precedence
+- dedupe overlaps
+- drop stale context
+- enforce prompt budgets
+
+### `worker_result`
+Purpose:
+
+- normalize worker outcomes into a versioned schema
+- capture blockers, evidence, validation linkage, risks, and next steps
+
+### `validation_bundle`
+Purpose:
+
+- normalize proof-tier validation artifacts and unresolved risks
+
+### `review_queue`
+Actions:
+
+- `summary`
+- `list`
+- `get`
+
+### `plan_mode`
+Actions:
+
+- `build`
+- `enter`
+- `status`
+- `exit`
+
+### `handoff_pack`
+Modes:
+
+- `resume`
+- `worker`
+- `review`
+- `status`
+
+### `drift_monitor`
+Actions:
+
+- `summary`
+- `list`
+- `get`
 
 ## Context packer behavior
 
@@ -330,6 +537,16 @@ If that happens, there are two likely paths:
 
 - keep it as a standalone plugin and publish it cleanly
 - upstream the core abstractions later if OpenClaw should own them natively
+
+## Public safety and source fidelity
+
+Before publishing or upstreaming, review:
+
+- `PUBLIC_REPO_SAFETY.md`
+- `SOURCE_GROUNDING.md`
+- `BUILD_SYSTEM.md`
+
+Those documents are part of the product, not side notes.
 
 ## Near-term roadmap
 
