@@ -61,6 +61,22 @@ It captures:
 
 The point is simple: CEO should not have to reconstruct truth from a long worker transcript when a bounded run finishes.
 
+## Phase 4: validation bundle
+
+The fourth feature turns validation into a first-class artifact.
+
+It captures:
+
+- proof tier (`1|2|3`)
+- outcome (`pass|partial|fail|blocked`)
+- before artifacts
+- after artifacts
+- explicit checks
+- unresolved risks
+- optional component scores
+
+This is how we stop vague success claims and make reviewer handoffs fast.
+
 ## Why this is the best first slice
 
 - **High leverage**: it improves planning, delegation, recovery, and review.
@@ -77,9 +93,12 @@ The point is simple: CEO should not have to reconstruct truth from a long worker
 - `src/context-packer-tool.js` — OpenClaw tool surface for packed prompt blocks
 - `src/worker-result.js` — worker handoff contract normalizer/validator
 - `src/worker-result-tool.js` — OpenClaw tool surface for structured worker outputs
+- `src/validation-bundle.js` — proof-tier validation bundle normalizer/validator
+- `src/validation-bundle-tool.js` — OpenClaw tool surface for reviewer-readable validation artifacts
 - `test/task-store.test.js` — store-level tests
 - `test/context-packer.test.js` — context packing tests
 - `test/worker-result.test.js` — worker result contract tests
+- `test/validation-bundle.test.js` — validation bundle tests
 - `openclaw.plugin.json` — plugin manifest
 
 ## Install later for live testing
@@ -115,6 +134,14 @@ Then enable it in config if needed and verify the `task_ledger` tool appears.
 - structures evidence instead of burying it in prose
 - carries blockers, risks, and next steps explicitly
 - marks review/handoff needs without a second tool
+
+## Validation bundle behavior
+
+- normalizes validation proof into a versioned schema
+- makes proof tier explicit instead of implied
+- separates before/after artifacts cleanly
+- captures check outcomes and unresolved risks in reviewable form
+- optionally carries component scores for reviewer grading
 
 ## Upstream strategy
 

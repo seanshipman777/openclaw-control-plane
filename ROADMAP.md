@@ -41,9 +41,11 @@ Goal: cleaner delegation and review.
 
 Goal: stop vague success claims.
 
-- [ ] proof tier model
-- [ ] structured before/after artifacts
-- [ ] unresolved-risk section
+- [x] proof tier model
+- [x] structured before/after artifacts
+- [x] unresolved-risk section
+- [ ] live OpenClaw install test
+- [ ] real-session usability pass
 
 ## Phase 5 — automation hooks
 
